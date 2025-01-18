@@ -3,6 +3,7 @@ import csv
 import requests
 from googleapiclient.discovery import build
 import config  # Import the config file
+from datetime import datetime
 
 
 def fetch_crunchbase_data(query):
@@ -82,21 +83,26 @@ def save_results_to_csv(filename, headers, data):
     os.makedirs("./../data", exist_ok=True)
     filepath = os.path.join("./../data", filename)
 
-    # Write data to the CSV file
     try:
-        with open(filepath, mode="w", newline="") as file:
+        with open(filepath, mode="w", newline="") as file:  # Open in write mode
             writer = csv.writer(file)
             writer.writerow(headers)  # Write headers
-            writer.writerows(data)    # Write data rows
+            writer.writerows(data)  # Write data rows
         print(f"Results saved to {filepath}")
     except Exception as e:
         print(f"Error saving results to CSV: {e}")
 
 
+def generate_unique_filename(base_name):
+    """Generates a unique filename with a timestamp."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return f"{base_name}_{timestamp}.csv"
+
+
 def main():
     # Example search terms
     crunchbase_query = "tech startups"
-    google_query = "Tech startups in Banglore"
+    google_query = "Top startups in banglore"
 
     # Fetch data from Crunchbase
     # print("Fetching Crunchbase data...")
@@ -114,9 +120,10 @@ def main():
     #         print("-" * 40)
     #         crunchbase_results.append([name, website, email])
 
-    #     # Save Crunchbase results to CSV
+    #     # Save Crunchbase results to a new CSV file
+    #     crunchbase_filename = generate_unique_filename("crunchbase_results")
     #     save_results_to_csv(
-    #         "crunchbase_results.csv",
+    #         crunchbase_filename,
     #         ["Name", "Website", "Contact Email"],
     #         crunchbase_results
     #     )
@@ -136,9 +143,10 @@ def main():
             print("-" * 40)
             google_results.append([result['title'], result['link'], result['snippet']])
 
-        # Save Google search results to CSV
+        # Save Google search results to a new CSV file
+        google_filename = generate_unique_filename("google_results")
         save_results_to_csv(
-            "google_results.csv",
+            google_filename,
             ["Title", "Link", "Snippet"],
             google_results
         )
@@ -152,9 +160,10 @@ def main():
             for email in emails:
                 print(email)
 
-            # Save extracted emails to CSV
+            # Save extracted emails to a new CSV file
+            emails_filename = generate_unique_filename("extracted_emails")
             save_results_to_csv(
-                "extracted_emails.csv",
+                emails_filename,
                 ["Email"],
                 email_results
             )
