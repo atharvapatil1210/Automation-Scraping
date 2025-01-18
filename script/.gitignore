@@ -1,1 +1,8 @@
+# Exclude the virtual environment directory
 myenv/
+
+# Exclude Python compiled files
+__pycache__/
+
+# Exclude specific file
+config.py
