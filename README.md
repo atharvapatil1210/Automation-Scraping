@@ -1,6 +1,3 @@
-### `README.md` for "Automation Scraping for Startups"
-
-```markdown
 # Automation Scraping for Startups
 
 This project automates the process of scraping data from Crunchbase and Google to extract valuable information for businesses, influencers, creators, or visionaries. The scraped data is then enriched, stored, and continuously updated in real-time for easy access and analysis.
