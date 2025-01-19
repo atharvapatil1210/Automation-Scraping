@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -17,11 +18,19 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install dependencies
+      - name: Install Node.js dependencies
         run: npm install
 
-      - name: Run tests
-        run: node app.py
+      - name: Install Python dependencies
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r script/requirements.txt
+
+      - name: Run Python script
+        run: |
+          source venv/bin/activate
+          python3 script/index.py
 
       - name: Deploy
         run: |
