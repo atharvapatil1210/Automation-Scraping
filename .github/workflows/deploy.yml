@@ -32,6 +32,10 @@ jobs:
       - name: Install Node.js dependencies
         run: npm install
 
+      - name: Ensure config.py is available
+        run: |
+          cp script/config.py .
+
       - name: Run Python script
         run: |
           source myenv/bin/activate
