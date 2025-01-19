@@ -31,8 +31,8 @@ The project has the following main tasks:
 
 ### 1. Clone the repository
 ```bash
-git clone <repository_url>
-cd <repository_directory>
+git clone https://github.com/atharvapatil1210/Automation-Scraping.git
+cd script
 ```
 
 ### 2. Install Python dependencies
