@@ -18,19 +18,24 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install Node.js dependencies
-        run: npm install
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Set your desired Python version
 
       - name: Install Python dependencies
         run: |
-          python3 -m venv venv
-          source venv/bin/activate
+          python -m venv myenv
+          source myenv/bin/activate
           pip install -r script/requirements.txt
+
+      - name: Install Node.js dependencies
+        run: npm install
 
       - name: Run Python script
         run: |
-          source venv/bin/activate
-          python3 script/index.py
+          source myenv/bin/activate
+          python script/index.py  # Your Python script to run
 
       - name: Deploy
         run: |
