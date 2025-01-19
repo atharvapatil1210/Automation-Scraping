@@ -3,7 +3,7 @@
 # This script will add a cron job to run the Python script periodically.
 
 # Path to your Python script
-SCRIPT_PATH="index.py"
+SCRIPT_PATH="../index.py"
 
 # Path to the python executable (make sure it's correct for your environment)
 PYTHON_PATH="/usr/bin/python3"

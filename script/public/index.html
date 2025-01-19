@@ -3,25 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scraper GUI</title>
+    <title>Web Scraper Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Scraper</h1>
-    <button id="run-scraper">Run Scraper</button>
-    <pre id="result"></pre>
+    <div class="container">
+        <header>
+            <h1>Web Scraper Dashboard</h1>
+        </header>
+        <main>
+            <section class="control-panel">
+                <button id="run-scraper" class="btn btn-primary">Run Scraper</button>
+            </section>
+            <section class="result-panel">
+                <h2>Scraper Results</h2>
+                <pre id="result" class="result-box"></pre>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2023 Web Scraper Dashboard. All rights reserved.</p>
+        </footer>
+    </div>
 
     <script>
         document.getElementById("run-scraper").addEventListener("click", () => {
+            const resultBox = document.getElementById("result");
+            resultBox.textContent = "Scraping in progress...";
+            
             fetch("/run-scraper")
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById("result").textContent = data;
+                    resultBox.textContent = data;
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("Failed to run scraper");
+                    resultBox.textContent = "Failed to run scraper. Please try again.";
                 });
         });
     </script>
 </body>
 </html>
+
