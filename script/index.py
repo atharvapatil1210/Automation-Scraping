@@ -1,10 +1,16 @@
 import os
 import csv
+import re
 import requests
 from googleapiclient.discovery import build
 import config  # Import the config file
 from datetime import datetime
+from pymongo import MongoClient
 
+
+# MongoDB Configuration
+client = MongoClient("mongodb://localhost:27017/")
+db = client["scraperDatabase"]
 
 def fetch_crunchbase_data(query):
     """Fetches data from Crunchbase API."""
@@ -76,6 +82,17 @@ def extract_emails_from_results(results):
                 print(f"Error accessing {result['link']}: {e}")
     return emails
 
+def save_to_mongodb(collection_name, data):
+    """Save data to MongoDB collection."""
+    try:
+        collection = db[collection_name]
+        if isinstance(data, list):
+            collection.insert_many(data)
+        else:
+            collection.insert_one(data)
+        print(f"Data saved to MongoDB collection: {collection_name}")
+    except Exception as e:
+        print(f"Error saving to MongoDB: {e}")
 
 def save_results_to_csv(filename, headers, data):
     """Saves results to a CSV file in the ./data folder."""
@@ -105,30 +122,32 @@ def main():
     google_query = "Top startups in banglore"
 
     # Fetch data from Crunchbase
-    # print("Fetching Crunchbase data...")
-    # crunchbase_data = fetch_crunchbase_data(crunchbase_query)
-    # if crunchbase_data:
-    #     crunchbase_results = []
-    #     print("Crunchbase Data:")
-    #     for item in crunchbase_data.get("data", {}).get("items", []):
-    #         name = item.get("properties", {}).get("name")
-    #         website = item.get("properties", {}).get("homepage_url")
-    #         email = item.get("properties", {}).get("email")
-    #         print(f"Name: {name}")
-    #         print(f"Website: {website}")
-    #         print(f"Contact Email: {email}")
-    #         print("-" * 40)
-    #         crunchbase_results.append([name, website, email])
+    print("Fetching Crunchbase data...")
+    crunchbase_data = fetch_crunchbase_data(crunchbase_query)
+    if crunchbase_data:
+        crunchbase_results = []
+        print("Crunchbase Data:")
+        for item in crunchbase_data.get("data", {}).get("items", []):
+            name = item.get("properties", {}).get("name")
+            website = item.get("properties", {}).get("homepage_url")
+            email = item.get("properties", {}).get("email")
+            print(f"Name: {name}")
+            print(f"Website: {website}")
+            print(f"Contact Email: {email}")
+            print("-" * 40)
+            crunchbase_results.append([name, website, email])
 
-    #     # Save Crunchbase results to a new CSV file
-    #     crunchbase_filename = generate_unique_filename("crunchbase_results")
-    #     save_results_to_csv(
-    #         crunchbase_filename,
-    #         ["Name", "Website", "Contact Email"],
-    #         crunchbase_results
-    #     )
-    # else:
-    #     print("Failed to retrieve data from Crunchbase.")
+            save_to_mongodb("crunchbase_data", crunchbase_results)
+
+        # Save Crunchbase results to a new CSV file
+        crunchbase_filename = generate_unique_filename("crunchbase_results")
+        save_results_to_csv(
+            crunchbase_filename,
+            ["Name", "Website", "Contact Email"],
+            crunchbase_results
+        )
+    else:
+        print("Failed to retrieve data from Crunchbase.")
 
     # Fetch data from Google
     print("\nFetching Google search results...")
@@ -143,6 +162,9 @@ def main():
             print("-" * 40)
             google_results.append([result['title'], result['link'], result['snippet']])
 
+        # Save Google search results to MongoDB
+        save_to_mongodb("google_data", google_results)
+
         # Save Google search results to a new CSV file
         google_filename = generate_unique_filename("google_results")
         save_results_to_csv(
@@ -156,9 +178,12 @@ def main():
         emails = extract_emails_from_results(google_data)
         if emails:
             print("Extracted Emails:")
-            email_results = [[email] for email in emails]
+            email_results = [{"email": email} for email in emails]
             for email in emails:
                 print(email)
+
+            # Save Google search results to MongoDB
+            save_to_mongodb("extracted_emails", email_results)
 
             # Save extracted emails to a new CSV file
             emails_filename = generate_unique_filename("extracted_emails")
