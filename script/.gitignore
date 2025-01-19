@@ -6,3 +6,8 @@ __pycache__/
 
 # Exclude specific file
 config.py
+
+#Node.js
+node_modules/
+
+

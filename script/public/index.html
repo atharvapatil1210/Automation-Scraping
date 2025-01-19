@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraper GUI</title>
+</head>
+<body>
+    <h1>Scraper</h1>
+    <button id="run-scraper">Run Scraper</button>
+    <pre id="result"></pre>
+
+    <script>
+        document.getElementById("run-scraper").addEventListener("click", () => {
+            fetch("/run-scraper")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("result").textContent = data;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Failed to run scraper");
+                });
+        });
+    </script>
+</body>
+</html>
